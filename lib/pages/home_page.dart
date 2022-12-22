@@ -23,7 +23,7 @@ class _HomePageState extends State<HomePage> {
   Future<void> getInformation() async {
     isLoading = true;
     setState(() {});
-    dynamic data = api.getInformation(name: widget.country);
+    dynamic data = await api.getInformation(name: widget.country);
 
     data.forEach((element) {
       listOfUniversity.add(University.fromJson(element));
