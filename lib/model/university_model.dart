@@ -1,6 +1,6 @@
 class University {
   final String alphaTwoCode;
-  final int name;
+  final String name;
   final List<String>? webPages;
   final String country;
 
