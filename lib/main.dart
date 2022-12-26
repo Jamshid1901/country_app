@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:pull_to_refresh/pull_to_refresh.dart';
 import 'package:weather/pages/home_page.dart';
 import 'package:weather/pages/weathers_home.dart';
 
@@ -12,8 +13,11 @@ class MyApp extends StatelessWidget {
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
-    return const MaterialApp(
-      home: WeathersHome(),
+    return RefreshConfiguration(
+      headerBuilder: () => WaterDropMaterialHeader(),
+      child: const MaterialApp(
+        home: WeathersHome(),
+      ),
     );
   }
 }
