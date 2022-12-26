@@ -1,4 +1,3 @@
-
 import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart' as url_launcher;
 import 'package:url_launcher/url_launcher_string.dart';
@@ -18,24 +17,13 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> {
   GetInformationRepository api = GetInformationRepository();
   List<University> listOfUniversity = [];
-  bool isLoading = true;
 
-  Future<void> getInformation() async {
-    isLoading = true;
-    setState(() {});
+  Future<List<University>> getInformation() async {
     dynamic data = await api.getInformation(name: widget.country);
-
     data.forEach((element) {
       listOfUniversity.add(University.fromJson(element));
     });
-    isLoading = false;
-    setState(() {});
-  }
-
-  @override
-  void initState() {
-    getInformation();
-    super.initState();
+    return listOfUniversity;
   }
 
   @override
@@ -44,60 +32,69 @@ class _HomePageState extends State<HomePage> {
       appBar: AppBar(
         title: Text("Universities of ${widget.country}"),
       ),
-      body: isLoading
-          ? const Center(child: CircularProgressIndicator())
-          : ListView.builder(
-              padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
-              itemCount: listOfUniversity.length,
-              itemBuilder: (context, index) {
-                return Container(
-                  margin: const EdgeInsets.only(top: 16),
+      body: FutureBuilder(
+        future: getInformation(),
+        builder:
+            (BuildContext context, AsyncSnapshot<List<University>> snapshot) {
+          return snapshot.hasData
+              ? ListView.builder(
                   padding:
-                      const EdgeInsets.symmetric(vertical: 10, horizontal: 16),
-                  decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(32),
-                      color: Colors.lightBlue),
-                  child: Column(
-                    children: [
-                      Text(
-                        listOfUniversity[index].name.toString(),
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
+                      const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
+                  itemCount: snapshot.data!.length,
+                  itemBuilder: (context, index) {
+                    return Container(
+                      margin: const EdgeInsets.only(top: 16),
+                      padding: const EdgeInsets.symmetric(
+                          vertical: 10, horizontal: 16),
+                      decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(32),
+                          color: Colors.lightBlue),
+                      child: Column(
+                        children: [
+                          Text(
+                            snapshot.data![index].name.toString(),
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                          const SizedBox(
+                            height: 32,
+                          ),
+                          TextButton(
+                              onPressed: () async {
+                                final launchUri = Uri.parse(
+                                  snapshot.data![index].webPages?.first ?? "",
+                                );
+                                await url_launcher.launchUrl(
+                                  launchUri,
+                                  mode: LaunchMode.externalApplication,
+                                );
+                              },
+                              child: Text(
+                                snapshot.data![index].webPages?.first ?? "",
+                                style: const TextStyle(color: Colors.white),
+                              )),
+                          const SizedBox(
+                            height: 32,
+                          ),
+                          TextButton(
+                              onPressed: () async {
+                                final Uri launchUri =
+                                    Uri(scheme: 'sms', path: '+998995375611');
+                                await url_launcher.launchUrl(launchUri);
+                              },
+                              child: const Text(
+                                "number",
+                                style: TextStyle(color: Colors.white),
+                              ))
+                        ],
                       ),
-                      const SizedBox(
-                        height: 32,
-                      ),
-                      TextButton(
-                          onPressed: () async {
-                            final launchUri = Uri.parse(
-                              listOfUniversity[index].webPages?.first ?? "",
-                            );
-                            await url_launcher.launchUrl(
-                              launchUri,
-                              mode: LaunchMode.externalApplication,
-                            );
-                          },
-                          child: Text(
-                            listOfUniversity[index].webPages?.first ?? "",
-                            style: const TextStyle(color: Colors.white),
-                          )),
-                      const SizedBox(
-                        height: 32,
-                      ),
-                      TextButton(
-                          onPressed: () async {
-                            final Uri launchUri =
-                                Uri(scheme: 'sms', path: '+998995375611');
-                            await url_launcher.launchUrl(launchUri);
-                          },
-                          child: const Text(
-                            "number",
-                            style: TextStyle(color: Colors.white),
-                          ))
-                    ],
-                  ),
-                );
-              }),
+                    );
+                  })
+              : snapshot.hasError
+                  ?  Center(child: Text(snapshot.error.toString()))
+                  : const Center(child: CircularProgressIndicator());
+        },
+      ),
       floatingActionButton: FloatingActionButton(
         backgroundColor: Colors.red,
         onPressed: () {
