@@ -15,11 +15,10 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-  GetInformationRepository api = GetInformationRepository();
   List<University> listOfUniversity = [];
 
   Future<List<University>> getInformation() async {
-    dynamic data = await api.getInformation(name: widget.country);
+    dynamic data = await GetInformationRepository.getInformation(name: widget.country);
     data.forEach((element) {
       listOfUniversity.add(University.fromJson(element));
     });
