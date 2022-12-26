@@ -102,11 +102,11 @@ class _WeathersHomeState extends State<WeathersHome> {
                 ),
                 isLoading
                     ? const Center(
-                      child: ShimmerItem(
+                        child: ShimmerItem(
                           height: 60,
                           width: 60,
                         ),
-                    )
+                      )
                     : Center(
                         child: Image.network(
                             "https:${weatherData.current?.condition?.icon ?? ""}")),
@@ -155,22 +155,23 @@ class _WeathersHomeState extends State<WeathersHome> {
                   ],
                 ),
                 SizedBox(
-                        height: 200,
-                        child: ListView.builder(
-                            padding: const EdgeInsets.symmetric(
-                                horizontal: 24, vertical: 16),
-                            scrollDirection: Axis.horizontal,
-                            itemCount: isLoading
-                                ? 10 : weatherData.forecast?.forecastday?.first
-                                    .hour?.length ??
-                                0,
-                            itemBuilder: (context, index) {
-                              return isLoading
-                                  ? Padding(
-                                    padding: const EdgeInsets.only(right: 24),
-                                    child: const ShimmerItem(height: 100, width: 90),
-                                  )
-                                  : HourItem(
+                  height: 200,
+                  child: ListView.builder(
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 24, vertical: 16),
+                      scrollDirection: Axis.horizontal,
+                      itemCount: isLoading
+                          ? 10
+                          : weatherData
+                                  .forecast?.forecastday?.first.hour?.length ??
+                              0,
+                      itemBuilder: (context, index) {
+                        return isLoading
+                            ? const Padding(
+                                padding: EdgeInsets.only(right: 24),
+                                child: ShimmerItem(height: 100, width: 90),
+                              )
+                            : HourItem(
                                 isActive: checkHour(index, weatherData),
                                 title: weatherData.forecast?.forecastday?.first
                                     .hour?[index].time,
@@ -179,8 +180,8 @@ class _WeathersHomeState extends State<WeathersHome> {
                                 image: weatherData.forecast?.forecastday?.first
                                     .hour?[index].condition?.icon,
                               );
-                            }),
-                      )
+                      }),
+                )
               ],
             ),
           ],
