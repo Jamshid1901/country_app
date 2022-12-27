@@ -59,7 +59,7 @@ class _AddCountryState extends State<AddCountry> {
             );
           }
         },
-        child: Icon(Icons.edit),
+        child: const Icon(Icons.edit),
       ),
     );
   }
