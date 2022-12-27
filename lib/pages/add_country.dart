@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:weather/pages/home_page.dart';
+import 'package:weather/pages/weathers_home.dart';
+import 'package:weather/repository/get_information.dart';
+import 'package:weather/store/store.dart';
 
 class AddCountry extends StatefulWidget {
   const AddCountry({Key? key}) : super(key: key);
@@ -33,15 +36,28 @@ class _AddCountryState extends State<AddCountry> {
         ),
       ),
       floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          Navigator.pushAndRemoveUntil(
-              context,
-              MaterialPageRoute(
-                builder: (_) => HomePage(
-                  country: textEditingController.text,
+        onPressed: () async {
+          var data = await GetInformationRepository.getInformationWeather(
+              name: textEditingController.text);
+          if (data["error"] == null) {
+            LocalStore.setCountry(textEditingController.text);
+            // ignore: use_build_context_synchronously
+            Navigator.pushAndRemoveUntil(
+                context,
+                MaterialPageRoute(
+                  builder: (_) => const WeathersHome(),
+                ),
+                (route) => false);
+          } else {
+            // ignore: use_build_context_synchronously
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                content: Text(
+                  data["error"].toString(),
                 ),
               ),
-              (route) => false);
+            );
+          }
         },
         child: Icon(Icons.edit),
       ),
