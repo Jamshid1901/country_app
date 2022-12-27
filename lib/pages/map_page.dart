@@ -22,6 +22,8 @@ class _MapPageState extends State<MapPage> {
         title: Text("Google map"),
       ),
       body: GoogleMap(
+        mapType: MapType.satellite,
+        myLocationEnabled: true,
         initialCameraPosition:
             CameraPosition(target: LatLng(widget.lat, widget.lon)),
       ),
