@@ -41,6 +41,9 @@ dependencies:
   pull_to_refresh: ^2.0.0
   shimmer: ^2.0.0
   shared_preferences: ^2.0.15
+  geolocator: ^9.0.2
+  osm_nominatim: ^2.0.1
+  google_maps_flutter: ^2.2.2
 
 dev_dependencies:
   flutter_test:

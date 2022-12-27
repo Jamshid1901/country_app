@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:geolocator/geolocator.dart';
+import 'package:osm_nominatim/osm_nominatim.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 import 'package:shimmer/shimmer.dart';
 import 'package:weather/model/weather_model.dart';
 import 'package:weather/pages/add_country.dart';
+import 'package:weather/pages/map_page.dart';
 import 'package:weather/store/store.dart';
 import 'package:weather/widgets/hout_item.dart';
 import 'package:weather/widgets/shimmer_item.dart';
@@ -25,8 +28,53 @@ class _WeathersHomeState extends State<WeathersHome>
   List<WeatherModel> listOfWeather = [];
   bool isLoading = true;
   bool isCancelButton = false;
-
+  double lat = 0;
+  double lon = 0;
   List<String> listOfTab = [];
+
+  Future<bool> _determinePosition() async {
+    LocationPermission permission;
+
+    permission = await Geolocator.checkPermission();
+    if (permission == LocationPermission.denied) {
+      permission = await Geolocator.requestPermission();
+      if (permission == LocationPermission.denied) {
+        return Future.error('Location permissions are denied');
+      } else if (permission == LocationPermission.whileInUse ||
+          permission == LocationPermission.always) {
+        var a = await Geolocator.getCurrentPosition();
+        final reverseSearchResult = await Nominatim.reverseSearch(
+          lat: a.latitude,
+          lon: a.longitude,
+          addressDetails: true,
+          extraTags: true,
+          nameDetails: true,
+        );
+        print(reverseSearchResult.address?["state"]);
+        await LocalStore.setCountry(reverseSearchResult.address?["state"]);
+        return true;
+      }
+    }
+
+    if (permission == LocationPermission.deniedForever) {
+      return Future.error(
+          'Location permissions are permanently denied, we cannot request permissions.');
+    }
+
+    var a = await Geolocator.getCurrentPosition();
+    lat = a.latitude;
+    lon = a.longitude;
+    final reverseSearchResult = await Nominatim.reverseSearch(
+      lat: a.latitude,
+      lon: a.longitude,
+      addressDetails: true,
+      extraTags: true,
+      nameDetails: true,
+    );
+    print(reverseSearchResult.address?["state"]);
+    await LocalStore.setCountry(reverseSearchResult.address?["state"]);
+    return true;
+  }
 
   Future<WeatherModel> getWeatherInfo(String country) async {
     final data =
@@ -52,6 +100,7 @@ class _WeathersHomeState extends State<WeathersHome>
   getLocalStore() async {
     isLoading = true;
     setState(() {});
+    await _determinePosition();
     List<String> listOfStore = await LocalStore.getCountry();
     listOfTab.addAll(listOfStore);
     for (int i = 0; i < listOfTab.length; i++) {
@@ -100,7 +149,8 @@ class _WeathersHomeState extends State<WeathersHome>
                                         onPressed: () {
                                           listOfWeather
                                               .removeAt(listOfTab.indexOf(e));
-                                          LocalStore.removeCountry(listOfTab.indexOf(e));
+                                          LocalStore.removeCountry(
+                                              listOfTab.indexOf(e));
                                           listOfTab
                                               .removeAt(listOfTab.indexOf(e));
                                           tabController = TabController(
@@ -287,12 +337,40 @@ class _WeathersHomeState extends State<WeathersHome>
                 ),
               ),
             ),
-            floatingActionButton: FloatingActionButton(
-              onPressed: () {
-                Navigator.of(context).push(
-                    MaterialPageRoute(builder: (_) => const AddCountry()));
-              },
-              child: const Icon(Icons.add),
+            floatingActionButton: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                FloatingActionButton(
+                  onPressed: () {
+                    Navigator.of(context).push(MaterialPageRoute(
+                        builder: (_) => MapPage(lat: lat, lon: lon)));
+                  },
+                  child: const Icon(Icons.map),
+                ),
+                const SizedBox(
+                  width: 16,
+                ),
+                FloatingActionButton(
+                  onPressed: () {
+                    listOfWeather.clear();
+                    listOfTab.clear();
+                    LocalStore.removeAll();
+                    tabController = TabController(length: 0, vsync: this);
+                    setState(() {});
+                  },
+                  child: const Icon(Icons.delete),
+                ),
+                const SizedBox(
+                  width: 16,
+                ),
+                FloatingActionButton(
+                  onPressed: () {
+                    Navigator.of(context).push(
+                        MaterialPageRoute(builder: (_) => const AddCountry()));
+                  },
+                  child: const Icon(Icons.add),
+                ),
+              ],
             ),
           );
   }

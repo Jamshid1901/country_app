@@ -23,4 +23,9 @@ abstract class LocalStore {
     newList.removeAt(index);
     store.setStringList("country", newList);
   }
+
+  static Future<void> removeAll() async {
+    SharedPreferences store = await SharedPreferences.getInstance();
+    store.remove("country");
+  }
 }
