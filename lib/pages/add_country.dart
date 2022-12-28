@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:weather/pages/home_page.dart';
 import 'package:weather/pages/weathers_home.dart';
-import 'package:weather/repository/get_information.dart';
+import 'package:weather/repository/main_repository.dart';
 import 'package:weather/store/store.dart';
 
 class AddCountry extends StatefulWidget {
@@ -37,27 +37,29 @@ class _AddCountryState extends State<AddCountry> {
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () async {
-          var data = await GetInformationRepository.getInformationWeather(
-              name: textEditingController.text);
-          if (data["error"] == null) {
-            LocalStore.setCountry(textEditingController.text);
-            // ignore: use_build_context_synchronously
-            Navigator.pushAndRemoveUntil(
-                context,
-                MaterialPageRoute(
-                  builder: (_) => const WeathersHome(),
-                ),
-                (route) => false);
-          } else {
-            // ignore: use_build_context_synchronously
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(
-                content: Text(
-                  data["error"].toString(),
-                ),
+
+          var data = await MainRepository.getInformationWeather(
+            name: textEditingController.text);
+        if (data["error"] == null) {
+          LocalStore.setCountry(textEditingController.text);
+          // ignore: use_build_context_synchronously
+          Navigator.pushAndRemoveUntil(
+              context,
+              MaterialPageRoute(
+                builder: (_) => const WeathersHome(),
               ),
-            );
-          }
+                  (route) => false);
+        } else {
+          // ignore: use_build_context_synchronously
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text(
+                data["error"].toString(),
+              ),
+            ),
+          );
+        }
+
         },
         child: const Icon(Icons.edit),
       ),

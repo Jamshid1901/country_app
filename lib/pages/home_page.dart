@@ -3,7 +3,7 @@ import 'package:url_launcher/url_launcher.dart' as url_launcher;
 import 'package:url_launcher/url_launcher_string.dart';
 import 'package:weather/model/university_model.dart';
 import 'package:weather/pages/add_country.dart';
-import 'package:weather/repository/get_information.dart';
+import 'package:weather/repository/main_repository.dart';
 
 class HomePage extends StatefulWidget {
   final String country;
@@ -18,7 +18,7 @@ class _HomePageState extends State<HomePage> {
   List<University> listOfUniversity = [];
 
   Future<List<University>> getInformation() async {
-    dynamic data = await GetInformationRepository.getInformation(name: widget.country);
+    dynamic data = await MainRepository.getInformation(name: widget.country);
     data.forEach((element) {
       listOfUniversity.add(University.fromJson(element));
     });

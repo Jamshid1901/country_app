@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 import 'package:weather/pages/home_page.dart';
+import 'package:weather/pages/send_gmail.dart';
 import 'package:weather/pages/weathers_home.dart';
 
 void main() {
@@ -10,13 +11,12 @@ void main() {
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
 
-  // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
     return RefreshConfiguration(
       headerBuilder: () => WaterDropMaterialHeader(),
       child: const MaterialApp(
-        home: WeathersHome(),
+        home: SendGmailPage(),
       ),
     );
   }

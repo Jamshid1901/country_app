@@ -10,7 +10,7 @@ import 'package:weather/store/store.dart';
 import 'package:weather/widgets/hout_item.dart';
 import 'package:weather/widgets/shimmer_item.dart';
 
-import '../repository/get_information.dart';
+import '../repository/main_repository.dart';
 
 class WeathersHome extends StatefulWidget {
   const WeathersHome({
@@ -78,7 +78,7 @@ class _WeathersHomeState extends State<WeathersHome>
 
   Future<WeatherModel> getWeatherInfo(String country) async {
     final data =
-        await GetInformationRepository.getInformationWeather(name: country);
+        await MainRepository.getInformationWeather(name: country);
     return WeatherModel.fromJson(data);
   }
 
