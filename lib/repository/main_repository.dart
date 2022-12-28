@@ -37,9 +37,10 @@ abstract class MainRepository {
     try {
       final url =
       Uri.parse("https://rapidprod-sendgrid-v1.p.rapidapi.com/mail/send");
-      final res = await http.post(url, headers: {
+      final res = await http.post(url,
+          headers: {
         'content-type': 'application/json',
-        'X-RapidAPI-Key': 'd0d8ce2366mshc56ba24b96eb6b2p14f78ejsnf51c79860e5a',
+        'X-RapidAPI-Key': '####',
         'X-RapidAPI-Host': 'rapidprod-sendgrid-v1.p.rapidapi.com'
       },
           body: jsonEncode(model.toJson())
