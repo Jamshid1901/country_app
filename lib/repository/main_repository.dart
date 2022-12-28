@@ -10,7 +10,7 @@ abstract class MainRepository {
   static getInformation({required String name}) async {
     try {
       final url =
-      Uri.parse("http://universities.hipolabs.com/search?country=$name");
+          Uri.parse("http://universities.hipolabs.com/search?country=$name");
       final res = await http.get(url);
       dynamic data = jsonDecode(res.body);
 
@@ -36,18 +36,36 @@ abstract class MainRepository {
   static sendGmail({required SendSimpleModel model}) async {
     try {
       final url =
-      Uri.parse("https://rapidprod-sendgrid-v1.p.rapidapi.com/mail/send");
+          Uri.parse("https://rapidprod-sendgrid-v1.p.rapidapi.com/mail/send");
       final res = await http.post(url,
           headers: {
-        'content-type': 'application/json',
-        'X-RapidAPI-Key': '####',
-        'X-RapidAPI-Host': 'rapidprod-sendgrid-v1.p.rapidapi.com'
-      },
-          body: jsonEncode(model.toJson())
-      );
+            'content-type': 'application/json',
+            'X-RapidAPI-Key': '####',
+            'X-RapidAPI-Host': 'rapidprod-sendgrid-v1.p.rapidapi.com'
+          },
+          body: jsonEncode(model.toJson()));
 
       return res.statusCode;
+    } catch (e) {
+      print(e);
+    }
+  }
 
+  static translate({required String text, required String lan}) async {
+    try {
+      final url = Uri.parse(
+          "https://google-translate1.p.rapidapi.com/language/translate/v2@q=Najot%20ta%60lim&target=ru&source=en");
+      final res = await http.post(
+        url,
+        headers: {
+          'content-type': 'application/x-www-form-urlencoded',
+          'Accept-Encoding': 'application/gzip',
+          'X-RapidAPI-Key': '####',
+          'X-RapidAPI-Host': 'google-translate1.p.rapidapi.com'
+        },
+      );
+
+      return res.body;
     } catch (e) {
       print(e);
     }

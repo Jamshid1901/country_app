@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 import 'package:weather/pages/home_page.dart';
-import 'package:weather/pages/send_gmail.dart';
 import 'package:weather/pages/weathers_home.dart';
 
 void main() {
@@ -16,7 +15,7 @@ class MyApp extends StatelessWidget {
     return RefreshConfiguration(
       headerBuilder: () => WaterDropMaterialHeader(),
       child: const MaterialApp(
-        home: SendGmailPage(),
+        home: WeathersHome(),
       ),
     );
   }

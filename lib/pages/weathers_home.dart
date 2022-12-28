@@ -50,7 +50,6 @@ class _WeathersHomeState extends State<WeathersHome>
           extraTags: true,
           nameDetails: true,
         );
-        print(reverseSearchResult.address?["state"]);
         await LocalStore.setCountry(reverseSearchResult.address?["state"]);
         return true;
       }

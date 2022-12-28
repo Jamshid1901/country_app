@@ -1,3 +1,4 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:weather/repository/main_repository.dart';
 
@@ -15,6 +16,7 @@ class _SendGmailPageState extends State<SendGmailPage> {
   TextEditingController fromEmail = TextEditingController();
   TextEditingController title = TextEditingController();
   TextEditingController desc = TextEditingController();
+  bool isLoading = false;
 
   @override
   Widget build(BuildContext context) {
@@ -28,6 +30,7 @@ class _SendGmailPageState extends State<SendGmailPage> {
           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
           children: [
             TextFormField(
+              onSaved: (s) {},
               controller: toEmail,
               decoration: const InputDecoration(labelText: "Kimga yuborish :"),
             ),
@@ -43,8 +46,10 @@ class _SendGmailPageState extends State<SendGmailPage> {
               controller: desc,
               decoration: const InputDecoration(labelText: "Describtion :"),
             ),
-            ElevatedButton(
-                onPressed: () async {
+            GestureDetector(
+                onTap: () async {
+                  isLoading = true;
+                  setState(() {});
                   SendSimpleModel data = SendSimpleModel(
                       fromEmail: fromEmail.text,
                       toEmail: toEmail.text,
@@ -52,11 +57,29 @@ class _SendGmailPageState extends State<SendGmailPage> {
                       desc: desc.text);
                   int status = await MainRepository.sendGmail(model: data);
 
-                  // ignore: use_build_context_synchronously
-                  ScaffoldMessenger.of(context)
-                      .showSnackBar(SnackBar(content: Text(status.toString())));
+                  if(status == 403){
+                    // ignore: use_build_context_synchronously
+                    ScaffoldMessenger.of(context)
+                        .showSnackBar(const SnackBar(content: Text("You are not subscribed to this API.")));
+                  }else if(status == 202){
+                    toEmail.clear();
+                    fromEmail.clear();
+                    title.clear();
+                    desc.clear();
+                    ScaffoldMessenger.of(context)
+                        .showSnackBar(const SnackBar(content: Text("Yuborildi")));
+                  }
+
+                  isLoading = false;
+                  setState(() {});
                 },
-                child: const Text("Send"))
+                child: Container(
+                    padding: const EdgeInsets.symmetric(
+                        vertical: 24, horizontal: 64),
+                    decoration: BoxDecoration(
+                        color: Colors.blue,
+                        borderRadius: BorderRadius.circular(24)),
+                    child: isLoading ? const CupertinoActivityIndicator() : const Text("Send")))
           ],
         ),
       ),
